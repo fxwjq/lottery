@@ -60,8 +60,10 @@ contract Raffle is VRFConsumerBaseV2, AutomationCompatibleInterface {
     // Lottery Variables
     uint256 private immutable i_interval;
     uint256 private immutable i_entranceFee;
+    // 这里的变量为什么使用 s_开头
     uint256 private s_lastTimeStamp;
     address private s_recentWinner;
+    //这个 payable变量修饰的数组意义是什么
     address payable[] private s_players;
     RaffleState private s_raffleState;
 
@@ -136,8 +138,12 @@ contract Raffle is VRFConsumerBaseV2, AutomationCompatibleInterface {
     /**
      * @dev Once `checkUpkeep` is returning `true`, this function is called
      * and it kicks off a Chainlink VRF call to get a random winner.
+     * 
+     * 那么这个方法，猜测是通过 requestId -》randomWords？
      */
     function performUpkeep(bytes calldata /* performData */) external override {
+        // 这里这个方法为什么要传递空串，那为何要定义这个入参
+
         (bool upkeepNeeded, ) = checkUpkeep("");
         // require(upkeepNeeded, "Upkeep not needed");
         if (!upkeepNeeded) {
@@ -162,6 +168,9 @@ contract Raffle is VRFConsumerBaseV2, AutomationCompatibleInterface {
     /**
      * @dev This is the function that Chainlink VRF node
      * calls to send the money to the random winner.
+     * 
+     * 这个方法接收一个选定的randomWords，作为一个随机
+     * 最终从参与人数中 找到那个人并把当前合约的钱给他
      */
     function fulfillRandomWords(
         uint256 /* requestId */,
@@ -188,6 +197,7 @@ contract Raffle is VRFConsumerBaseV2, AutomationCompatibleInterface {
     }
 
     /** Getter Functions */
+    //如果这里需要获取些变量，那么为什么不直接定义为public，而是要专门写 get方法？
 
     function getRaffleState() public view returns (RaffleState) {
         return s_raffleState;
